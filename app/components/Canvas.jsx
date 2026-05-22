@@ -113,8 +113,8 @@ const Canvas = () => {
     
 
     return (
-        <Flex className={"w-full h-[calc(100vh-250px)] mt-10 mb-20 border-2 border-gray-200 rounded-2xl relative"} ref={flexRef}>
-            <button className='absolute top-2 left-1/2 -translate-x-1/2 bg-green-400 hover:cursor-pointer py-2 px-4 border-none outline-none rounded-full z-30 font-semibold text-xl' onClick={() =>randomPic(3)}>নতুন ছবি</button>
+        <Flex className={"flex w-full h-[calc(100vh-250px)] md:mt-10 mt-6 mb-20 border-2 border-gray-200 rounded-2xl relative"} ref={flexRef}>
+            <button className='absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-green-400 hover:cursor-pointer py-2 px-4 border-none outline-none rounded-full z-30 font-semibold md:text-xl text-sm' onClick={() =>randomPic(3)}>নতুন ছবি</button>
             <canvas  ref = {canvasRef} className='relative block w-full h-full z-10' onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={movment}/>
             <Image src={`/images/practise_images/p${picNum}.png`} height={1500} width={1000} className='absolute z-20 pointer-events-none mix-blend-multiply w-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[110%]' alt='Practise Image' loading='eager'></Image>
         </Flex>

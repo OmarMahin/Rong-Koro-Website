@@ -10,7 +10,7 @@ const ColorPicker = ({ children, state, name, onClick }) => {
   const {color, setColor} = useColorPicker()
 
   return (
-    <Flex className={"flex flex-row gap-x-5"}>
+    <Flex className={"flex flex-row md:gap-x-5 gap-x-2 justify-center flex-wrap gap-y-1"}>
       <Color state={color === "#ffadad"} onClick={() => setColor("#ffadad")} name={"লাল"} color={"#ffadad"} />
       <Color state={color === "#ffd6a5"} onClick={() => setColor("#ffd6a5")} name={"কমলা"} color={"#ffd6a5"} />
       <Color state={color === "#fdffb6"} onClick={() => setColor("#fdffb6")} name={"হলুদ"} color={"#fdffb6"} />
