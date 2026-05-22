@@ -37,9 +37,25 @@ const Canvas = () => {
         contextRef.current.beginPath()
     }
 
+    const getCoordinates = (e) => {
+        if (e.touches && e.touches.length > 0) {
+            return {
+                x: e.touches[0].clientX - offsets.x,
+                y: e.touches[0].clientY - offsets.y
+            }
+        }
+        return {
+            x: e.clientX - offsets.x,
+            y: e.clientY - offsets.y
+        }
+    }
     const movment = (e) => {
         if (!painting){
             return
+        }
+
+        if (e.cancelable){
+            e.preventDefault()
         }
         
         
@@ -55,8 +71,10 @@ const Canvas = () => {
             contextRef.current.strokeStyle = "white"
         }
 
-        const current_x = e.clientX - offsets.x
-        const current_y = e.clientY - offsets.y
+        const {
+            x: current_x,
+            y: current_y
+        } = getCoordinates(e)
 
         const mid_x = (lastCoord.current.x + current_x) / 2
         const mid_y = (lastCoord.current.y + current_y) / 2
@@ -91,10 +109,10 @@ const Canvas = () => {
 
             contextRef.current = canvas.getContext("2d")
 
-            setOffsets({
-                x: rect.left,
-                y: rect.top
-            })
+            if (canvasRef.current) {
+                const rect = canvasRef.current.getBoundingClientRect()
+                setOffsets({ x: rect.left, y: rect.top })
+            }
         }
 
         const clearCanvas = () => {
@@ -115,7 +133,7 @@ const Canvas = () => {
     return (
         <Flex className={"flex w-full h-[calc(100vh-250px)] md:mt-10 mt-6 mb-20 border-2 border-gray-200 rounded-2xl relative"} ref={flexRef}>
             <button className='absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-green-400 hover:cursor-pointer py-2 px-4 border-none outline-none rounded-full z-30 font-semibold md:text-xl text-sm' onClick={() =>randomPic(3)}>নতুন ছবি</button>
-            <canvas  ref = {canvasRef} className='relative block w-full h-full z-10' onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={movment}/>
+            <canvas  ref = {canvasRef} className='relative block w-full h-full z-10 touch-none' onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={movment}/>
             <Image src={`/images/practise_images/p${picNum}.png`} height={1500} width={1000} className='absolute z-20 pointer-events-none mix-blend-multiply w-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[110%]' alt='Practise Image' loading='eager'></Image>
         </Flex>
     )
