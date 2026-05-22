@@ -1,18 +1,20 @@
 import React from 'react'
 import Flex from './Flex'
 import PaintingTools from './PaintingTools'
-import Colors from './Colors'
+import ColorPicker from './ColorPicker'
 
 const Toolbar = () => {
   return (
-    <Flex className={'flex flex-row justify-between items-center pt-5'}>
+    <Flex className={'flex flex-col w-full gap-y-4'}>
+      <Flex className={'flex flex-row justify-between items-center pt-5'}>
         <div>
-            <h1>Logo</h1>
+          <h1>Logo</h1>
         </div>
-        <Flex className={'flex flex-row gap-x-2 items-center'}>
-            <PaintingTools/>
-            <Colors/>
-        </Flex>
+        <PaintingTools />
+      </Flex>
+      <Flex className={'flex flex-row justify-around items-center'}>
+        <ColorPicker />
+      </Flex>
     </Flex>
   )
 }

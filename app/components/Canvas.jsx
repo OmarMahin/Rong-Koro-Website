@@ -3,6 +3,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Flex from './Flex'
 import { usePaintTool } from '../context/PaintToolContext'
+import { useColorPicker } from '../context/ColorPickerContext'
+import Image from 'next/image'
 
 const Canvas = () => {
 
@@ -15,6 +17,7 @@ const Canvas = () => {
     const [painting, setPainting] = useState(false)
 
     const {tool, setTool} = usePaintTool()
+    const {color, setColor} = useColorPicker()
 
     const mouseDown = (e) => {
         setPainting(true)
@@ -44,7 +47,7 @@ const Canvas = () => {
 
         if (tool === "brush"){
             contextRef.current.lineWidth = 20
-            contextRef.current.strokeStyle = "#a041bf"
+            contextRef.current.strokeStyle = color
         }
         else if (tool === "eraser"){
             contextRef.current.lineWidth = 30
@@ -97,13 +100,14 @@ const Canvas = () => {
             window.removeEventListener("clearCanvas", clearCanvas)
         }
 
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
     
 
     return (
-        <Flex className={"w-full h-[calc(100vh-120px)] mt-10 mb-20 border-2 border-gray-200 rounded-2xl"} ref={flexRef}>
-            <canvas  ref = {canvasRef} className='block w-full h-full' onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={movment}/>
+        <Flex className={"w-full h-[calc(100vh-250px)] mt-10 mb-20 border-2 border-gray-200 rounded-2xl relative"} ref={flexRef}>
+            <canvas  ref = {canvasRef} className='relative block w-full h-full z-10' onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={movment}/>
+            <Image src={'/images/practise_images/p1.png'} height={1500} width={1000} className='absolute z-20 pointer-events-none mix-blend-multiply w-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[110%]' alt='Practise Image' loading='eager'></Image>
         </Flex>
     )
 }
