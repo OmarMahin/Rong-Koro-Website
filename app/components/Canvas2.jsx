@@ -7,11 +7,14 @@ import { useColorPicker } from "../context/ColorPickerContext";
 import Image from "next/image";
 import { MdCancel } from "react-icons/md";
 import ImageIcon from "./ImageIcon";
-const Canvas = () => {
+
+const Canvas2 = () => {
   const canvasRef = useRef(null);
   const flexRef = useRef(null);
   const contextRef = useRef(null);
   const lastCoord = useRef({ x: 0, y: 0 });
+
+  const maskImageRef = useRef(null);
 
   const [offsets, setOffsets] = useState({ x: 0, y: 0 });
   const [painting, setPainting] = useState(false);
@@ -19,7 +22,7 @@ const Canvas = () => {
   const [showSelectonMenu, setShowSelectonMenu] = useState(false);
 
   const { tool, setTool } = usePaintTool();
-  const { color, setColor } = useColorPicker();
+  const { color } = useColorPicker();
 
   const getCoordinates = (e) => {
     if (e.touches && e.touches.length > 0) {
@@ -28,21 +31,21 @@ const Canvas = () => {
         y: e.touches[0].clientY - offsets.y,
       };
     }
+
     return {
       x: e.clientX - offsets.x,
       y: e.clientY - offsets.y,
     };
   };
+
   const mouseDown = (e) => {
     setPainting(true);
-
     lastCoord.current = getCoordinates(e);
   };
 
-  const mouseUp = (e) => {
+  const mouseUp = () => {
     setPainting(false);
 
-    contextRef.current.stroke();
     contextRef.current.beginPath();
   };
 
@@ -55,15 +58,17 @@ const Canvas = () => {
       e.preventDefault();
     }
 
-    contextRef.current.lineCap = "round";
-    contextRef.current.lineJoin = "round";
+    const ctx = contextRef.current;
+
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
 
     if (tool === "brush") {
-      contextRef.current.lineWidth = 20;
-      contextRef.current.strokeStyle = color;
+      ctx.lineWidth = 25;
+      ctx.strokeStyle = color;
     } else if (tool === "eraser") {
-      contextRef.current.lineWidth = 30;
-      contextRef.current.strokeStyle = "white";
+      ctx.lineWidth = 30;
+      ctx.strokeStyle = "white";
     }
 
     const { x: current_x, y: current_y } = getCoordinates(e);
@@ -71,14 +76,39 @@ const Canvas = () => {
     const mid_x = (lastCoord.current.x + current_x) / 2;
     const mid_y = (lastCoord.current.y + current_y) / 2;
 
-    contextRef.current.quadraticCurveTo(
+    ctx.save();
+
+    ctx.beginPath();
+    ctx.moveTo(lastCoord.current.x, lastCoord.current.y);
+
+    ctx.quadraticCurveTo(
       lastCoord.current.x,
       lastCoord.current.y,
       mid_x,
       mid_y
     );
 
-    contextRef.current.stroke();
+    ctx.stroke();
+
+    ctx.globalCompositeOperation = "destination-in";
+
+    if (maskImageRef.current) {
+      const canvas = canvasRef.current;
+
+      const img = maskImageRef.current;
+
+      const scale = (canvas.height * 1.1) / img.height;
+
+      const drawWidth = img.width * scale;
+      const drawHeight = img.height * scale;
+
+      const drawX = (canvas.width - drawWidth) / 2;
+      const drawY = (canvas.height - drawHeight) / 2;
+
+      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+    }
+
+    ctx.restore();
 
     lastCoord.current = {
       x: current_x,
@@ -88,6 +118,7 @@ const Canvas = () => {
 
   const randomPic = (max) => {
     setPicNum(Math.floor(Math.random() * (max - 1 + 1)) + 1);
+
     const clearEvent = new CustomEvent("clearCanvas");
     window.dispatchEvent(clearEvent);
   };
@@ -95,14 +126,20 @@ const Canvas = () => {
   const updateOffsets = () => {
     if (canvasRef.current) {
       const rect = canvasRef.current.getBoundingClientRect();
-      setOffsets({ x: rect.left, y: rect.top });
+
+      setOffsets({
+        x: rect.left,
+        y: rect.top,
+      });
     }
   };
 
   const selectPic = (num) => {
     setPicNum(num);
+
     const clearEvent = new CustomEvent("clearCanvas");
     window.dispatchEvent(clearEvent);
+
     setShowSelectonMenu(false);
   };
 
@@ -111,18 +148,25 @@ const Canvas = () => {
     const flex = flexRef.current;
 
     if (canvas && flex) {
-      const rect = canvas.getBoundingClientRect();
-
       canvas.width = flex.clientWidth - 4;
       canvas.height = flex.clientHeight - 4;
 
       contextRef.current = canvas.getContext("2d");
 
       updateOffsets();
+
+      const maskImg = new window.Image();
+
+      maskImg.src = `/images/practise_images/outline/p${picNum}.png`;
+
+      maskImg.onload = () => {
+        maskImageRef.current = maskImg;
+      };
     }
 
     const clearCanvas = () => {
       contextRef.current.clearRect(0, 0, canvas.width, canvas.height);
+
       setTool("brush");
     };
 
@@ -131,6 +175,7 @@ const Canvas = () => {
         if (currentPainting) {
           movment(e);
         }
+
         return currentPainting;
       });
     };
@@ -145,15 +190,16 @@ const Canvas = () => {
 
     return () => {
       window.removeEventListener("clearCanvas", clearCanvas);
-      window.addEventListener("resize", updateOffsets);
-      window.addEventListener("scroll", updateOffsets);
+      window.removeEventListener("resize", updateOffsets);
+      window.removeEventListener("scroll", updateOffsets);
+
       if (canvas) {
         canvas.removeEventListener("touchmove", handleTouchMove);
       }
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [picNum]);
 
   return (
     <Flex
@@ -168,6 +214,7 @@ const Canvas = () => {
       >
         ছবি পরিবর্তন
       </button>
+
       <canvas
         ref={canvasRef}
         className="relative block w-full h-full z-10 touch-none"
@@ -178,6 +225,7 @@ const Canvas = () => {
         onTouchEnd={mouseUp}
         onTouchMove={movment}
       />
+
       <Image
         src={`/images/practise_images/outline/p${picNum}.png`}
         height={1500}
@@ -185,10 +233,10 @@ const Canvas = () => {
         className="absolute z-20 pointer-events-none mix-blend-multiply w-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[110%]"
         alt="Practise Image"
         loading="eager"
-      ></Image>
+      />
 
       <Flex
-        className={`flex flex-col p-4 bg-white h-[90%] max-h-155 w-[90%] max-w-100 absolute  left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-2xl border-2 border-gray-600 shadow-xl shadow-gray-400 duration-500 ${
+        className={`flex flex-col p-4 bg-white h-[90%] max-h-155 w-[90%] max-w-100 absolute left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-2xl border-2 border-gray-600 shadow-xl shadow-gray-400 duration-500 ${
           showSelectonMenu
             ? "top-1/2 opacity-100 z-40"
             : "top-[40%] opacity-0 z-0"
@@ -200,11 +248,11 @@ const Canvas = () => {
         >
           <MdCancel className="text-2xl text-red-400" />
         </Flex>
+
         <Flex className={"flex flex-wrap gap-x-5 gap-y-4 mt-4"}>
           {Array.from({ length: 4 }).map((_, index) => (
             <ImageIcon
               state={index + 1 === picNum}
-              name="ছবি পরিবর্তন করুন"
               onClick={() => selectPic(index + 1)}
               imageNum={index + 1}
               key={index}
@@ -216,4 +264,4 @@ const Canvas = () => {
   );
 };
 
-export default Canvas;
+export default Canvas2;
