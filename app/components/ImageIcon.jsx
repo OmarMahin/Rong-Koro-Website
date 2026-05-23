@@ -6,8 +6,8 @@ const ImageIcon = ({ state, onClick, imageNum, ...props}) => {
     return (
         <Flex className={'flex flex-col gap-y-2 items-center hover:cursor-pointer'} onClick={onClick} {...props} >
 
-            <Flex className={`flex md:w-14 md:h-14 w-8 h-8 items-center justify-center rounded-full border-2 border-black text-[25px]  ${state ? "outline-2 outline-offset-4 " : ""} p-1 duration-100`}>
-                <Image src={`/images/practise_images/p${imageNum}.png`} height={1500} width={1000} alt='Practise Image' loading='eager'/>
+            <Flex className={`flex md:w-14 md:h-14 w-11 h-11 items-center justify-center rounded-full border-2 border-black text-[25px]  ${state ? "outline-2 outline-offset-4 " : ""} p-2 duration-100`}>
+                <Image src={`/images/practise_images/solid/p${imageNum}.png`} height={1500} width={1000} alt='Practise Image' loading='eager'/>
             </Flex>
         </Flex>
 

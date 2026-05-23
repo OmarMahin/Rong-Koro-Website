@@ -165,14 +165,14 @@ const Canvas = () => {
         <Flex className={"flex w-full h-[calc(100vh-250px)] md:mt-10 mt-6 mb-20 border-2 border-gray-200 rounded-2xl relative"} ref={flexRef}>
             <button className='absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-green-400 hover:cursor-pointer py-2 px-4 border-none outline-none rounded-full z-30 font-semibold md:text-xl text-sm' onClick={() => setShowSelectonMenu(true)}>নতুন ছবি</button>
             <canvas ref={canvasRef} className='relative block w-full h-full z-10 touch-none' onMouseDown={mouseDown} onMouseUp={mouseUp} onMouseMove={(e) => painting && movment(e)} onTouchStart={mouseDown} onTouchEnd={mouseUp} onTouchMove={movment} />
-            <Image src={`/images/practise_images/p${picNum}.png`} height={1500} width={1000} className='absolute z-20 pointer-events-none mix-blend-multiply w-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[110%]' alt='Practise Image' loading='eager'></Image>
+            <Image src={`/images/practise_images/outline/p${picNum}.png`} height={1500} width={1000} className='absolute z-20 pointer-events-none mix-blend-multiply w-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[110%]' alt='Practise Image' loading='eager'></Image>
 
             <Flex className={`flex flex-col p-4 bg-white h-[90%] max-h-155 w-[90%] max-w-100 absolute  left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-2xl border-2 border-gray-600 shadow-xl shadow-gray-400 duration-500 ${showSelectonMenu ? "top-1/2 opacity-100 z-40" : "top-[40%] opacity-0 z-0"}`}>
                 <Flex className={'flex justify-end hover:cursor-pointer'} onClick={() => setShowSelectonMenu(false)}>
                     <MdCancel className='text-2xl text-red-400' />
                 </Flex>
                 <Flex className={'flex flex-wrap gap-x-5 gap-y-4 mt-4'}>
-                    {Array.from({length: 3}).map((_, index) => (
+                    {Array.from({length: 4}).map((_, index) => (
                         <ImageIcon state={index + 1 === picNum} name='ছবি পরিবর্তন করুন' onClick={() => selectPic(index + 1)} imageNum={index + 1} key={index} />
                     ))}
                     
