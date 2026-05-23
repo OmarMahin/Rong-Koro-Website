@@ -7,7 +7,7 @@ import { createContext, useContext, useState } from "react";
 const ColorPickerContext = createContext(null)
 
 export function ColorPickerProvider({ children }) {
-    const [color, setColor] = useState("#ffadad")
+    const [color, setColor] = useState("#e6261f")
 
     return (
         <ColorPickerContext.Provider value={{ color, setColor }}>
