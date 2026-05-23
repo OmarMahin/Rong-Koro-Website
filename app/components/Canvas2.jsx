@@ -15,6 +15,7 @@ const Canvas2 = () => {
   const lastCoord = useRef({ x: 0, y: 0 });
 
   const maskImageRef = useRef(null);
+  const overlayImageRef = useRef(null);
 
   const [offsets, setOffsets] = useState({ x: 0, y: 0 });
   const [painting, setPainting] = useState(false);
@@ -93,19 +94,13 @@ const Canvas2 = () => {
     ctx.globalCompositeOperation = "destination-in";
 
     if (maskImageRef.current) {
-      const canvas = canvasRef.current;
+        const canvasRect = canvasRef.current.getBoundingClientRect()
+        const imageRect = overlayImageRef.current.getBoundingClientRect()
+        
+        const drawX = imageRect.left - canvasRect.left
+        const drawY = imageRect.top - canvasRect.top
 
-      const img = maskImageRef.current;
-
-      const scale = (canvas.height * 1.1) / img.height;
-
-      const drawWidth = img.width * scale;
-      const drawHeight = img.height * scale;
-
-      const drawX = (canvas.width - drawWidth) / 2;
-      const drawY = (canvas.height - drawHeight) / 2;
-
-      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+      ctx.drawImage(maskImageRef.current, drawX, drawY, imageRect.width, imageRect.height);
     }
 
     ctx.restore();
@@ -145,13 +140,20 @@ const Canvas2 = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const flex = flexRef.current;
+    const flex = flexRef.current.getBoundingClientRect();
 
     if (canvas && flex) {
-      canvas.width = flex.clientWidth - 4;
-      canvas.height = flex.clientHeight - 4;
+
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = flex.width * dpr;
+        canvas.height = flex.height * dpr;
+
+      canvas.style.width = `${flex.width}px`
+    canvas.style.height = `${flex.height}px`
 
       contextRef.current = canvas.getContext("2d");
+
+      contextRef.current.scale(dpr, dpr)
 
       updateOffsets();
 
@@ -227,6 +229,7 @@ const Canvas2 = () => {
       />
 
       <Image
+      ref = {overlayImageRef}
         src={`/images/practise_images/outline/p${picNum}.png`}
         height={1500}
         width={1000}
