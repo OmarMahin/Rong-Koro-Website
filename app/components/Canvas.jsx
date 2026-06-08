@@ -201,7 +201,7 @@ const Canvas = () => {
           <MdCancel className="text-2xl text-red-400" />
         </Flex>
         <Flex className={"flex flex-wrap gap-x-5 gap-y-4 mt-4"}>
-          {Array.from({ length: 4 }).map((_, index) => (
+          {Array.from({ length: 10 }).map((_, index) => (
             <ImageIcon
               state={index + 1 === picNum}
               name="ছবি পরিবর্তন করুন"
